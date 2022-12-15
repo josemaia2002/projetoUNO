@@ -1,10 +1,12 @@
-// Versão de 15/12/2022 09:59
+// Versão de 15/12/2022 11:43
 // demmo e demmo2 são as versões mais avançadas do projeto
 // Em demmo2, o bot sabe que descartou uma carta
-// demmo4 é uma versão de testes
+// demmo5 é uma versão de testes alpha
+// TODO implementar o <complement2>
+// TODO consertar análise de valor e naipe
+// TODO implementar scanf e atualização da mão para BUY 2 e BUY 4
 // ./uno bot_A bot_X
 // gcc main.c -o bot_X
-// TODO implementar o <complement2>
 
 #include <stdio.h>
 #include <string.h>
@@ -63,6 +65,8 @@ int main() {
   sscanf(my_hand, "%s %s %s %s %s %s %s", cartas[0], cartas[1], cartas[2],
          cartas[3], cartas[4], cartas[5], cartas[6]);
 
+  //debug(cartas[hand_size-1]);
+
   for(int i = 0; i < hand_size; i++) {
     sscanf(cartas[i], "%1s %4s", valor, naipe);
     strcpy(hand[i].naipe, naipe);
@@ -78,6 +82,7 @@ int main() {
   char last_complement[MAX_LINE];
 
   while(1) {
+    debug(cartas[hand_size-1]);
     do {
       scanf("%s %s", action, complement);
       if(strcmp(action, "DISCARD") == 0) {
@@ -112,7 +117,6 @@ int main() {
         if((strcmp(carta_valor, valor) == 0) || (strcmp(carta_naipe, naipe) == 0)){
           printf("DISCARD %s\n", cartas[i]);
           strcpy(table, cartas[i]);
-          debug(table);
           for(int j = i; j < hand_size-1; j++){
             strcpy(cartas[j], cartas[j+1]);
           }
@@ -124,7 +128,9 @@ int main() {
       }
       if(encontrado == false){
         printf("BUY %d\n", UM);
+        hand_size++;
         scanf("%s", cartas[hand_size-1]);
+        //debug(cartas[hand_size-1]);
       }
     }
   }
