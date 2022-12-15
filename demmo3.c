@@ -1,4 +1,4 @@
-// Versão de 14/12 /2022 12:08
+// Versão de 15/12 /2022 09:59
 // demmo e demmo2 são as versões mais avançadas do projeto
 // Em demmo2, o bot sabe que descartou uma carta
 
@@ -9,6 +9,7 @@
 #define MAX_ACTION 10
 #define MAX_ID_SIZE 10
 
+#define UM 1
 #define DOIS 2
 #define QUATRO 4
 
@@ -19,6 +20,11 @@ typedef struct {
   char naipe[4];
 } Carta;
 
+typedef enum {
+  true = 1,
+  false = 0,
+}boolean;
+
 int main() {
   char temp[MAX_LINE];     // string para leitura temporária de dados
   char my_id[MAX_ID_SIZE]; // identificador do seu bot
@@ -28,6 +34,7 @@ int main() {
   setbuf(stderr, NULL);
 
   int hand_size = 8;
+  boolean encontrado;
   char valor[20], naipe[20], dtm[100];
   char carta_valor[20], carta_naipe[20];
   char copas[4] = {226, 153, 165, 0};
@@ -158,13 +165,22 @@ int main() {
           }
           hand_size--;
         }
+        else{
+          encontrado = false;
+        }
       }
 
+      if(encontrado == false){
+        printf("BUY %d\n", UM);
+      }
+
+
       /*TODO 
-        semelhante ao que foi feito alpha.c:
-          criar variável <encontrado> para armazenar estado;
+        semelhante ao que foi feito em alpha.c:
+          OK criar variável <encontrado> para armazenar estado;
           se carta não for encontrada em **point1**, <encontrado> recebe 0;
           no final do loop, se <encontrado> for igual a 0 => BUY 1;
+          converter UM, DOIS e QUATRO de MACROS para enums
       */
 
     }
@@ -172,3 +188,133 @@ int main() {
 
   return 0;
 }
+
+
+
+
+
+// ###########################################################################################
+
+// Produzida em 14/12/2022 11:23
+
+// Seleção de carta implementada
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void read_line(char linha[], int tam, FILE* f){
+  fgets(linha, tam, f);
+  while(linha[0] == '\n'){
+    fgets(linha, tam , f);
+  }   
+  if(linha[strlen(linha)-1] == '\n'){
+    linha[strlen(linha)-1] = '\0';
+  }
+}
+
+typedef enum {
+  true = 1,
+  false = 0,
+}boolean;
+
+typedef struct {
+  char valor[3];
+  char naipe[4];
+} Carta;
+
+int main () {
+  char valor[20], naipe[20], dtm[100];
+  Carta hand[7];
+  Carta temp_hand[7];
+  int size = 8;
+  //int encontrado = 0;
+  boolean encontrado;
+
+  char table[100];
+
+  char copas[4] = {226, 153, 165, 0};
+  char ouros[4] = {226, 153, 166, 0};
+  char paus[4] = {226, 153, 163, 0};
+  char espadas[4] = {226, 153, 160, 0};
+
+  char table_valor[20], table_naipe[20];
+  
+  char entrada[10];
+  int index;
+
+  for(int i = 0; i < size; i++) {
+    read_line(entrada, 10, stdin);
+
+    strcpy( dtm, entrada );
+    sscanf( dtm, "%1s %4s", valor, naipe);
+  
+    strcpy(hand[i].naipe, naipe);
+    strcpy(hand[i].valor, valor);
+  }
+
+  char command[10];
+  scanf("%s", table);
+  sscanf(table, "%1s %4s", table_valor, table_naipe);
+  scanf("%s", command);
+
+  while(strcmp(command, "stop") != 0){
+    // Algoritmo para descartar uma carta da mão
+    if(strcmp(command, "discard") == 0){
+      //scanf("%d", &index);
+      encontrado = false;
+      for(int i = 0; i < size; i++){
+        if((strcmp(hand[i].valor, table_valor) == 0) || (strcmp(hand[i].naipe, table_naipe) == 0)){
+          index = i;
+          encontrado = true;
+          //break;
+          printf("achado em %d\n", index);
+          }
+      }
+
+      if(encontrado == true){
+        printf("Descartar índice %d\n", index);
+        for(int i = index; i < size-1; i++){
+          strcpy(hand[i].valor, hand[i+1].valor);
+          strcpy(hand[i].naipe, hand[i+1].naipe);
+        }
+        size--;
+      }
+      else{
+        printf("BUY 1");
+      }
+    }
+    
+    printf("______________\nImprimindo\n");
+    printf("Na mesa %s\n", table);
+    printf("Mão do jogador\n");
+
+    for(int i = 0; i < size; i++) {
+      printf("%s", hand[i].valor);
+      printf("%s\n", hand[i].naipe);
+    }
+    printf("______________\n");
+    scanf("%s", command);
+  }
+
+   return(0);
+}
+
+
+
+/*
+
+2♥ 
+7♦ 
+2♣ 
+V♠ 
+A♥ 
+3♦ 
+2♦ 
+9♠
+
+2♦
+
+discard
+
+*/
