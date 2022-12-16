@@ -1,5 +1,6 @@
-// Versão de 15/12/2022 21:04
-// Primeira versão a concluir uma partida
+// Versão de 16/12/2022 10:35
+// Essa é a versão mais atualizada
+// **TODO consertar table, table está atrasada**
 // ./uno bot_A bot_X
 // gcc main.c -o bot_X
 
@@ -60,13 +61,6 @@ int main() {
   sscanf(my_hand, "%s %s %s %s %s %s %s", cartas[0], cartas[1], cartas[2],
          cartas[3], cartas[4], cartas[5], cartas[6]);
 
-  //debug(cartas[hand_size-1]);
-
-  for(int i = 0; i < hand_size; i++) {
-    sscanf(cartas[i], "%1s %4s", valor, naipe);
-    strcpy(hand[i].naipe, naipe);
-    strcpy(hand[i].valor, valor);
-  }
   scanf("TABLE %s\n", table);
 
   char id[MAX_ID_SIZE];
@@ -78,7 +72,6 @@ int main() {
   char last_complement[MAX_LINE];
 
   while(1) {
-    //debug(cartas[hand_size-1]);
     do {
       scanf("%s %s", action, complement);
       if(strcmp(action, "DISCARD") == 0){
@@ -89,8 +82,8 @@ int main() {
           sscanf(complement, "%2s %4s", valor, naipe); 
         }
 
+        // TODO resolver problema da carta da mesa
         if((strcmp(valor, "A") == 0) || (strcmp(valor, "C") == 0)){
-          //strcpy(table, complement);
           scanf("%s", complement2);
           strcpy(table, valor);
           strcat(table, complement2);
@@ -98,13 +91,8 @@ int main() {
         else{
           strcpy(table, complement);
         }
-
       }
     } while(strcmp(action, "TURN") || strcmp(complement, my_id));
-    debug(table);
-    /*for(int i = 0; i < hand_size; i++){
-      debug(cartas[i]);
-    }*/
 
     if(strlen(table) == 4){
       sscanf(table, "%1s %4s", valor, naipe); 
@@ -156,7 +144,6 @@ int main() {
         printf("BUY %d\n", UM);
         hand_size++;
         scanf("%s", cartas[hand_size-1]);
-        //debug(cartas[hand_size-1]);
       }
     }
   }

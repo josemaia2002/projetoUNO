@@ -1,8 +1,5 @@
-// Versão de 15/12/2022 18:23
+// Versão de 15/12/2022 19:30
 // demmo e demmo2 são as versões mais avançadas do projeto
-// Em demmo2, o bot sabe que descartou uma carta
-// demmo5 é uma versão de testes alpha
-// TODO implementar o <complement2>
 // ./uno bot_A bot_X
 // gcc main.c -o bot_X
 
@@ -81,19 +78,33 @@ int main() {
   char last_complement[MAX_LINE];
 
   while(1) {
-    debug(cartas[hand_size-1]);
+    //debug(cartas[hand_size-1]);
     do {
       scanf("%s %s", action, complement);
-      if(strcmp(action, "DISCARD") == 0) {
-        strcpy(last_action, "DISCARD");
-        strcpy(last_complement, complement);
-        strcpy(table, complement);
+      if(strcmp(action, "DISCARD") == 0){
+        if(strlen(complement) == 4){
+          sscanf(complement, "%1s %4s", valor, naipe); 
+        }
+        else{
+          sscanf(complement, "%2s %4s", valor, naipe); 
+        }
+
+        if((strcmp(valor, "A") == 0) || (strcmp(valor, "C") == 0)){
+          //strcpy(table, complement);
+          scanf("%s", complement2);
+          strcpy(table, valor);
+          strcat(table, complement2);
+        }
+        else{
+          strcpy(table, complement);
+        }
+
       }
     } while(strcmp(action, "TURN") || strcmp(complement, my_id));
-
-    for(int i = 0; i < hand_size; i++){
+    //debug(table);
+    /*for(int i = 0; i < hand_size; i++){
       debug(cartas[i]);
-    }
+    }*/
 
     if(strlen(table) == 4){
       sscanf(table, "%1s %4s", valor, naipe); 
@@ -101,16 +112,17 @@ int main() {
     else{
       sscanf(table, "%2s %4s", valor, naipe); 
     }
-
+    // Comprar 4
     if(strcmp(valor, "C") == 0){
       printf("BUY %d\n", QUATRO);
       hand_size += 4;
       scanf("%s %s %s %s", cartas[hand_size-1], cartas[hand_size-2], cartas[hand_size-3], cartas[hand_size-4]);
     } 
+    // Comprar 2
     else if(strcmp(valor, "V") == 0){
       printf("BUY %d\n", DOIS);
       hand_size += 2;
-      scanf("%s %s %s %s", cartas[hand_size-1], cartas[hand_size-2]);
+      scanf("%s %s", cartas[hand_size-1], cartas[hand_size-2]);
     }
     else{
       encontrado = true;
@@ -122,8 +134,15 @@ int main() {
           sscanf(cartas[i], "%2s %4s", carta_valor, carta_naipe); 
         }
         if((strcmp(carta_valor, valor) == 0) || (strcmp(carta_naipe, naipe) == 0)){
-          printf("DISCARD %s\n", cartas[i]);
-          strcpy(table, cartas[i]);
+          if((strcmp(carta_valor, "A") == 0) || strcmp(carta_valor, "C") == 0 ){
+            strcpy(table, carta_valor);
+            strcat(table, espadas);
+            printf("DISCARD %s %s\n", cartas[i], espadas);
+          }
+          else{
+            strcpy(table, cartas[i]);
+            printf("DISCARD %s\n", cartas[i]);
+          }
           for(int j = i; j < hand_size-1; j++){
             strcpy(cartas[j], cartas[j+1]);
           }
