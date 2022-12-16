@@ -1,10 +1,10 @@
-// Versão de 15/12/2022 09:59
+// Versão de 15/12/2022 18:23
 // demmo e demmo2 são as versões mais avançadas do projeto
 // Em demmo2, o bot sabe que descartou uma carta
-// demmo4 é uma versão de testes
+// demmo5 é uma versão de testes alpha
+// TODO implementar o <complement2>
 // ./uno bot_A bot_X
 // gcc main.c -o bot_X
-// TODO implementar o <complement2>
 
 #include <stdio.h>
 #include <string.h>
@@ -63,6 +63,8 @@ int main() {
   sscanf(my_hand, "%s %s %s %s %s %s %s", cartas[0], cartas[1], cartas[2],
          cartas[3], cartas[4], cartas[5], cartas[6]);
 
+  //debug(cartas[hand_size-1]);
+
   for(int i = 0; i < hand_size; i++) {
     sscanf(cartas[i], "%1s %4s", valor, naipe);
     strcpy(hand[i].naipe, naipe);
@@ -73,11 +75,13 @@ int main() {
   char id[MAX_ID_SIZE];
   char action[MAX_ACTION];
   char complement[MAX_LINE];
+  char complement2[MAX_LINE];
 
   char last_action[MAX_ACTION];
   char last_complement[MAX_LINE];
 
   while(1) {
+    debug(cartas[hand_size-1]);
     do {
       scanf("%s %s", action, complement);
       if(strcmp(action, "DISCARD") == 0) {
@@ -86,6 +90,10 @@ int main() {
         strcpy(table, complement);
       }
     } while(strcmp(action, "TURN") || strcmp(complement, my_id));
+
+    for(int i = 0; i < hand_size; i++){
+      debug(cartas[i]);
+    }
 
     if(strlen(table) == 4){
       sscanf(table, "%1s %4s", valor, naipe); 
@@ -96,9 +104,13 @@ int main() {
 
     if(strcmp(valor, "C") == 0){
       printf("BUY %d\n", QUATRO);
+      hand_size += 4;
+      scanf("%s %s %s %s", cartas[hand_size-1], cartas[hand_size-2], cartas[hand_size-3], cartas[hand_size-4]);
     } 
     else if(strcmp(valor, "V") == 0){
       printf("BUY %d\n", DOIS);
+      hand_size += 2;
+      scanf("%s %s %s %s", cartas[hand_size-1], cartas[hand_size-2]);
     }
     else{
       encontrado = true;
@@ -112,7 +124,6 @@ int main() {
         if((strcmp(carta_valor, valor) == 0) || (strcmp(carta_naipe, naipe) == 0)){
           printf("DISCARD %s\n", cartas[i]);
           strcpy(table, cartas[i]);
-          debug(table);
           for(int j = i; j < hand_size-1; j++){
             strcpy(cartas[j], cartas[j+1]);
           }
@@ -124,7 +135,9 @@ int main() {
       }
       if(encontrado == false){
         printf("BUY %d\n", UM);
+        hand_size++;
         scanf("%s", cartas[hand_size-1]);
+        //debug(cartas[hand_size-1]);
       }
     }
   }
