@@ -2,7 +2,6 @@
 #include <string.h>
 
 // RESOLVER PROBLEMA DO TABLE
-// Versão de 18:52
 // ./uno bot_A bot_X -s 65708
 // gcc main.c -o bot_X
 
@@ -30,6 +29,23 @@ void trataCarta(char* carta, char* valor, char* naipe){
   }
   else{
     sscanf(carta, "%2s %4s", valor, naipe); 
+  }
+}
+
+// FUNÇÃO PARA COMPRAR CARTAS
+// char cartas[][100]
+// char** cartas
+void buy(int qte, char cartas[][100], int* hand_size){
+  printf("BUY %d\n", qte);
+  *hand_size += qte;
+  if(qte == 4){
+    scanf("%s %s %s %s", cartas[(*hand_size)-1], cartas[(*hand_size)-2], cartas[(*hand_size)-3], cartas[(*hand_size)-4]);
+  }
+  else if(qte == 2){
+    scanf("%s %s", cartas[(*hand_size)-1], cartas[(*hand_size)-2]);
+  }
+  else{
+    scanf("%s", cartas[(*hand_size)-1]);
   }
 }
 
@@ -93,21 +109,24 @@ int main() {
         else{
           strcpy(table, complement);
         }
-        
+
       }
     } while (strcmp(action, "TURN") || strcmp(complement, my_id));
     trataCarta(table, valor, naipe);
     // Comprar 4
     if(strcmp(valor, "C") == 0){
-      printf("BUY %d\n", QUATRO);
-      hand_size += 4;
-      scanf("%s %s %s %s", cartas[hand_size-1], cartas[hand_size-2], cartas[hand_size-3], cartas[hand_size-4]);
+      buy(4, cartas, &hand_size);
+      //printf("BUY %d\n", QUATRO);
+      //hand_size += 4;
+      //scanf("%s %s %s %s", cartas[hand_size-1], cartas[hand_size-2], cartas[hand_size-3], cartas[hand_size-4]);
+
     } 
     // Comprar 2
     else if(strcmp(valor, "V") == 0){
-      printf("BUY %d\n", DOIS);
-      hand_size += 2;
-      scanf("%s %s", cartas[hand_size-1], cartas[hand_size-2]);
+      buy(2, cartas, &hand_size);
+      //printf("BUY %d\n", DOIS);
+      //hand_size += 2;
+      //scanf("%s %s", cartas[hand_size-1], cartas[hand_size-2]);
     }
     else{
       encontrado = true;
@@ -135,9 +154,10 @@ int main() {
         }
       }
       if(encontrado == false){
-        printf("BUY %d\n", UM);
-        hand_size++;
-        scanf("%s", cartas[hand_size-1]);
+        buy(1, cartas, &hand_size);
+        //printf("BUY %d\n", UM);
+        //hand_size++;
+        //scanf("%s", cartas[hand_size-1]);
       }
     }
   }
